@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import path from "path";
 import { promises as fs } from "node:fs";
+const axios = require('axios');
 
 // Get current directory to help with loading files
 const __filename = fileURLToPath(import.meta.url);
@@ -81,6 +82,31 @@ app.post("/copilot", express.json(), async (req, res) => {
   // Forward the response stream back to the user
   Readable.from(copilotResponse.body).pipe(res);
 });
+
+// Keep the debugger running
+setInterval(() => {
+    console.log("Debugger is running...");
+}, 10000);
+
+// Add an issue comment
+async function postIssueComment() {
+    const issueUrl = 'https://api.github.com/repos/your-repo/issues/1/comments'; // Update with your repo and issue number
+    const comment = "Hey @professortocat, please check if my codespace is running correctly.\n\nhttps://my-codespace-link-3000.app.github.dev";
+
+    try {
+        await axios.post(issueUrl, { body: comment }, {
+            headers: {
+                Authorization: `Bearer YOUR_PERSONAL_ACCESS_TOKEN`, // Replace with your GitHub token
+                'Content-Type': 'application/json'
+            }
+        });
+        console.log("Issue comment posted successfully.");
+    } catch (error) {
+        console.error("Failed to post issue comment:", error.message);
+    }
+}
+
+postIssueComment();
 
 // Start the extension web service and show the URL where the web service is running.
 const port = Number(process.env.PORT || "3000");
