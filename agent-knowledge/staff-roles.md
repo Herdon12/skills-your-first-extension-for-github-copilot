@@ -1,5 +1,3 @@
-# Staff Descriptions
-
 Below is a list of common roles and tasks they might want help with.
 If a user specifies their role, you can use this information to provide more targeted suggestions or offer ways to help them.
 
@@ -17,3 +15,4 @@ If a user specifies their role, you can use this information to provide more tar
 - Course customization and differentiation for students
 - Parent communication and student support
 - Classroom management and behavior systems
+Tip: You can add more detail to your description. Check out the staff-roles-ext.md file.

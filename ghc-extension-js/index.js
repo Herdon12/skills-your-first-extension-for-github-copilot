@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import path from "path";
 import { promises as fs } from "node:fs";
+const axios = require('axios');
 
 // Get current directory to help with loading files
 const __filename = fileURLToPath(import.meta.url);
@@ -35,34 +36,34 @@ app.post("/copilot", express.json(), async (req, res) => {
   const messages = payload.messages;
 
   // Add the agent job description to copilot's messages
-  // const jobDescription = await fs.readFile(
-  //   path.join(__dirname, "agent-knowledge", "job-description.md"),
-  //   "utf8"
-  // );
-  // messages.unshift({
-  //   role: "system",
-  //   content: jobDescription,
-  // });
+  const jobDescription = await fs.readFile(
+    path.join(__dirname, "agent-knowledge", "job-description.md"),
+    "utf8"
+  );
+  messages.unshift({
+    role: "system",
+    content: jobDescription,
+  });
 
   // Add the school overview to copilot's messages
-  // const schoolOverview = await fs.readFile(
-  //   path.join(__dirname, "agent-knowledge", "school-overview.md"),
-  //   "utf8"
-  // );
-  // messages.unshift({
-  //   role: "system",
-  //   content: schoolOverview,
-  // });
+  const schoolOverview = await fs.readFile(
+    path.join(__dirname, "agent-knowledge", "school-overview.md"),
+    "utf8"
+  );
+  messages.unshift({
+    role: "system",
+    content: schoolOverview,
+  });
 
   // Add the staff descriptions to copilot's messages
-  // const staffDescriptions = await fs.readFile(
-  //   path.join(__dirname, "agent-knowledge", "staff-roles.md"),
-  //   "utf8"
-  // );
-  // messages.unshift({
-  //   role: "system",
-  //   content: staffDescriptions,
-  // });
+  const staffDescriptions = await fs.readFile(
+    path.join(__dirname, "agent-knowledge", "staff-roles.md"),
+    "utf8"
+  );
+  messages.unshift({
+    role: "system",
+    content: staffDescriptions,
+  });
 
   // Send messages array to copilot and collect the response
   const userToken = req.get("X-GitHub-Token");
@@ -81,6 +82,31 @@ app.post("/copilot", express.json(), async (req, res) => {
   // Forward the response stream back to the user
   Readable.from(copilotResponse.body).pipe(res);
 });
+
+// Keep the debugger running
+setInterval(() => {
+    console.log("Debugger is running...");
+}, 10000);
+
+// Add an issue comment
+async function postIssueComment() {
+    const issueUrl = 'https://api.github.com/repos/your-repo/issues/1/comments'; // Update with your repo and issue number
+    const comment = "Hey @professortocat, please check if my codespace is running correctly.\n\nhttps://my-codespace-link-3000.app.github.dev";
+
+    try {
+        await axios.post(issueUrl, { body: comment }, {
+            headers: {
+                Authorization: `Bearer YOUR_PERSONAL_ACCESS_TOKEN`, // Replace with your GitHub token
+                'Content-Type': 'application/json'
+            }
+        });
+        console.log("Issue comment posted successfully.");
+    } catch (error) {
+        console.error("Failed to post issue comment:", error.message);
+    }
+}
+
+postIssueComment();
 
 // Start the extension web service and show the URL where the web service is running.
 const port = Number(process.env.PORT || "3000");
